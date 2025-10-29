@@ -33,7 +33,7 @@ const options = {
       }
     }
   },
-  apis: ['./routes/*.js', './controllers/*.js'] // Path to the API docs
+  apis: ['./routes/*.js', './controllers/*.js', './controllers/**/*.js'] // Path to the API docs
 };
 
 const swaggerSpec = swaggerJsdoc(options);
@@ -41,7 +41,10 @@ const swaggerSpec = swaggerJsdoc(options);
 module.exports = function swaggerSetup(app) {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'InstaVision API Documentation'
+    customSiteTitle: 'InstaVision API Documentation',
+    swaggerOptions: {
+      persistAuthorization: true // Keep authorization across page reloads
+    }
   }));
 };
 
