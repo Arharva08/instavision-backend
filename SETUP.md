@@ -12,16 +12,48 @@
    ```
 
 2. **Setup environment variables**
-   ```bash
-   cp .env.example .env
+   
+   Create a `.env` file in the server directory with the following variables:
+   ```env
+   NODE_ENV=development
+   PORT=3000
+   CORS_ORIGIN=http://localhost:5173
+   
+   JWT_SECRET=your-super-secret-jwt-key-change-this
+   JWT_EXPIRES_IN=7d
+   
+   DATABASE_HOST=localhost
+   DATABASE_PORT=5432
+   DATABASE_NAME=instavision
+   DATABASE_USER=postgres
+   DATABASE_PASSWORD=your_password
+   
+   ADMIN_USERNAME=admin
+   ADMIN_EMAIL=admin@instavision.com
+   ADMIN_PASSWORD=admin123
    ```
 
-3. **Start development server**
+3. **Run database migrations**
+   ```bash
+   npm run migrate
+   ```
+
+4. **Seed admin user**
+   ```bash
+   npm run seed
+   ```
+   
+   Or run both at once:
+   ```bash
+   npm run setup
+   ```
+
+5. **Start development server**
    ```bash
    npm run dev
    ```
 
-4. **Access the API**
+6. **Access the API**
    - API: http://localhost:3000
    - API Docs: http://localhost:3000/api-docs
    - Health Check: http://localhost:3000/api/health
@@ -65,13 +97,54 @@ server/
 └── render.yaml      # Render config
 ```
 
+## 🔐 Authentication & Authorization
+
+### How to use:
+1. **Login** - POST to `/api/auth/login` with email and password to get JWT token
+2. **Register Users** - POST to `/api/auth/register` (Admin only) to create new users
+3. **Get Current User** - GET `/api/auth/me` (requires authentication)
+4. **Access Protected Routes** - Include JWT token in Authorization header: `Bearer <token>`
+
+### Roles:
+- **admin**: Can register new users, view all users
+- **student**: Regular users with limited access
+
+### Example API Requests:
+
+**Login:**
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@instavision.com", "password": "admin123"}'
+```
+
+**Register (Admin only):**
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Authorization: Bearer <admin-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "student1",
+    "email": "student1@instavision.com",
+    "password": "password123",
+    "first_name": "Student",
+    "last_name": "One",
+    "role": "student"
+  }'
+```
+
+**Get Current User:**
+```bash
+curl -X GET http://localhost:3000/api/auth/me \
+  -H "Authorization: Bearer <token>"
+```
+
 ## 🔧 Next Steps
 
-- Add database connection (MongoDB, PostgreSQL, etc.)
-- Implement authentication (JWT)
 - Add more routes and controllers
 - Write unit tests
-- Add logging service
+- Add more user features (profile update, etc.)
+- Implement password reset functionality
 
 ## 📞 Need Help?
 
